@@ -43,7 +43,7 @@ class WapWeiboCrawler():
         if response.status_code == 200:
             print "模拟登陆成功,当前登陆账号为：" + username
         else:
-            print "模拟登陆失败"
+            raise Exception("模拟登陆失败")
     
     def get_page(self, url):
         page = self.session.get(url)
@@ -53,17 +53,19 @@ class WapWeiboCrawler():
 
     def get_content(self):
         filename = raw_input('请输入文件名:\n')
-        f = open(filename, 'w')
-        user_id = raw_input('请输入需要爬取的用户ID:\n')
-        baseURL = 'https://weibo.cn/u/' + user_id
-        page_number = raw_input('请输入需要爬取的页数:\n')
-        for i in range(int(page_number)):
-            url = baseURL + '?page=' + str(i+1)
-            time.sleep(2)
-            page = self.get_page(url)
-            soup = BeautifulSoup(page, 'lxml')
-            f.write(soup.prettify())
-        f.close()
+        try:
+            f = open(filename, 'w')
+            user_id = raw_input('请输入需要爬取的用户ID:\n')
+            baseURL = 'https://weibo.cn/u/' + user_id
+            page_number = raw_input('请输入需要爬取的页数:\n')
+            for i in range(int(page_number)):
+                url = baseURL + '?page=' + str(i+1)
+                time.sleep(2)
+                page = self.get_page(url)
+                soup = BeautifulSoup(page, 'lxml')
+                f.write(soup.prettify())
+        finally:
+            f.close()
 
 
 if __name__ == '__main__':
@@ -72,8 +74,4 @@ if __name__ == '__main__':
     weibo_crawler = WapWeiboCrawler(username, password)
     weibo_crawler.log_in()
     weibo_crawler.get_content()
-
-
-
-
 
