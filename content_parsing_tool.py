@@ -6,8 +6,9 @@ sys.setdefaultencoding("utf-8")
 import re
 
 
-def get_basic_info(content):
+def get_basic_info(home_page_content):
     basic_info = dict()
+    content = home_page_content
 
     # Get username/sex/region/relationship/signature.
     pattern = re.compile('<span class="ctt">(.*?)<span class="cmt">(.*?)</span>.*?<span class="ctt".*?>(.*?)</span>', re.S)
