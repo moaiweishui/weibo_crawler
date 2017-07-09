@@ -68,7 +68,7 @@ class WapWeiboCrawler():
             print basic_info['fans'] + '\n'
             print '简介：' + basic_info['signature']
             print '\n----------------------------------------\n\n'
-            print '该用户共有微博内容%d页' % (int(basic_info['page_num']))
+            print '该用户共有微博内容%d页,' % (int(basic_info['page_num']))
             page_number = raw_input('请输入需要爬取的页数:\n')
             for i in range(int(page_number)):
                 url = baseURL + '?page=' + str(i+1)
