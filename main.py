@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import sys
 reload(sys)
-sys.setdefaultencoding( "utf-8" )
+sys.setdefaultencoding("utf-8")
 
 from content_parsing_tool import *
 
@@ -12,5 +12,6 @@ try:
     basic_info = get_basic_info(content)
     for key, values in basic_info.items():
         print key + ':' + values
+    print type(basic_info['page_num']), int(basic_info['page_num'])
 finally:
     f.close()

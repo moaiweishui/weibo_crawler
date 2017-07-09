@@ -3,9 +3,12 @@
 import sys
 import time
 import random
+import re
 
 import requests
 from bs4 import BeautifulSoup
+
+from content_parsing_tool import *
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -47,8 +50,6 @@ class WapWeiboCrawler():
     
     def get_page(self, url):
         page = self.session.get(url)
-        print "Get page succeed:",
-        print page.url
         return page.content
 
     def get_content(self):
@@ -57,13 +58,29 @@ class WapWeiboCrawler():
             f = open(filename, 'w')
             user_id = raw_input('请输入需要爬取的用户ID:\n')
             baseURL = 'https://weibo.cn/u/' + user_id
+            home_page = BeautifulSoup(self.get_page(baseURL), 'lxml').prettify()
+            basic_info = get_basic_info(home_page)
+            print '\n\n----------------------------------------\n'
+            print '昵称：' + basic_info['username'] + '    ', 
+            print basic_info['sex'] + '/' + basic_info['region'] + '\n'
+            print basic_info['weibo_num'] + '  |  ',
+            print basic_info['follow'] + '  |  ',
+            print basic_info['fans'] + '\n'
+            print '简介：' + basic_info['signature']
+            print '\n----------------------------------------\n\n'
+            print '该用户共有微博内容%d页' % (int(basic_info['page_num']))
             page_number = raw_input('请输入需要爬取的页数:\n')
             for i in range(int(page_number)):
                 url = baseURL + '?page=' + str(i+1)
                 time.sleep(2)
                 page = self.get_page(url)
-                soup = BeautifulSoup(page, 'lxml')
-                f.write(soup.prettify())
+                if page:
+                    print "Get page succeed:",
+                    print url
+                    soup = BeautifulSoup(page, 'lxml')
+                    f.write(soup.prettify())
+                else:
+                    print "Get page failed."
         finally:
             f.close()
 

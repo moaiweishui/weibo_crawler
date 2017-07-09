@@ -8,7 +8,7 @@ import re
 
 def get_basic_info(home_page_content):
     basic_info = dict()
-    content = home_page_content
+    content = home_page_content.encode('utf-8')
 
     # Get username/sex/region/relationship/signature.
     pattern = re.compile('<span class="ctt">(.*?)<span class="cmt">(.*?)</span>.*?<span class="ctt".*?>(.*?)</span>', re.S)
@@ -39,6 +39,7 @@ def get_basic_info(home_page_content):
     if result:
         basic_info['page_num'] = re.match(r'.*?/(\d+).*?', result.group(1).strip()).group(1)
     else:
+        print 'Non page number.'
         None
 
     return basic_info
