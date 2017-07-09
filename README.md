@@ -3,5 +3,5 @@
 
 ## Introduction
 - **main.py**：主函数
-- **wap_weibo_crawler.py**：模拟登陆[新浪微博](https://weibo.cn)（wap站），无需验证码
+- **wap_weibo_crawler.py**：模拟登陆[新浪微博](https://weibo.cn)（wap站），无需验证码，静态爬取
 - **content_parsing_tool.py**：内容解析/信息提取
