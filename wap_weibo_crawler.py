@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import sys
+import os
 import time
 import random
 import re
@@ -44,6 +45,7 @@ class WapWeiboCrawler():
         self.post_data['password'] = self.password
         response = self.session.post(self.login_url, data=self.post_data, headers=self.headers)
         if response.status_code == 200:
+            print '-'*40 + '\n'
             print "模拟登陆成功,当前登陆账号为：" + self.username
         else:
             raise Exception("模拟登陆失败")
@@ -57,10 +59,16 @@ class WapWeiboCrawler():
         home_page = BeautifulSoup(self.get_page(baseURL), 'lxml').prettify()
         return home_page
 
-    def get_content(self, user_id, page_num):
-        print '\n----------------------------------------\n'
-        print '开始获取ID为%s用户的前%d页微博内容...\n' % (user_id, page_num)
-        filename = raw_input('请输入你要保存的文件名: ')
+    def get_content(self, user_id, nickname, page_num):
+        print '\n' + '-'*40 + '\n'
+        print '开始获取用户%s的前%d页微博内容...\n' % (nickname, page_num)
+        filename = nickname + '.txt'
+        dir_path = 'output file/' + nickname + '/'
+        # If folder does not exist.
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+            print 'Create fold: "' + dir_path + '" succeed.'
+        filename = dir_path + filename
         try:
             f = open(filename, 'w')
             base_url = 'https://weibo.cn/u/' + user_id
@@ -77,6 +85,8 @@ class WapWeiboCrawler():
                     print "Get page failed."
         finally:
             f.close()
+            print '\n获取内容完成，文件保存于：' + filename + '\n'
+
         return filename
 
 
