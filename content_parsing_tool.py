@@ -48,6 +48,8 @@ def get_weibo_content(filename):
     try:
         # Open local file.
         f = open(filename, 'r')
+        print '-'*40 + '\n'
+        print '开始解析微博内容...\n'
         content = f.read()
         # Match weibo entry. 
         pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>.*?<a href="https://weibo.cn/attitude.*?">(.*?)</a>.*?<a href="https://weibo.cn/repost.*?">(.*?)</a>.*?<a class="cc" href="https://weibo.cn/comment.*?">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>', re.S)
@@ -55,7 +57,7 @@ def get_weibo_content(filename):
         cnt = 1
         result = list()
         if entrys:
-            print '共获取到%d条内容。' % (len(entrys))
+            print '共获取到%d条微博。' % (len(entrys))
             for entry in entrys:
                 weibo = dict()
                 weibo['cnt'] = cnt
