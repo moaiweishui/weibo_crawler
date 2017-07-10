@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import sys
+import os
 
 from content_parsing_tool import *
 
@@ -17,7 +18,7 @@ class sina_weibo():
         self.basic_info = get_basic_info(home_page)
 
     def display_basic_info(self):
-        print '\n\n----------------------------------------\n'
+        print '\n' + '-'*40 + '\n'
         print '昵称：' + self.basic_info['username'] + '    ',
         print self.basic_info['sex'] + '/' + self.basic_info['region'] + '\n'
         print self.basic_info['weibo_num'] + '  |  ',
@@ -25,14 +26,14 @@ class sina_weibo():
         print self.basic_info['fans'] + '\n'
         print '简介：' + self.basic_info['signature']
         print '\n共有微博内容%d页' % (int(self.basic_info['page_num']))
-        print '\n----------------------------------------\n\n'
+        print '\n' + '-'*40 + '\n'
 
     def get_weibo_content(self, filename):
         self.weibo_content = get_weibo_content(filename)
 
     def display_weibo_content(self):
         for weibo in self.weibo_content:
-            print '\n----------------------------------------'
+            print '\n' + '-'*40
             print weibo['cnt'], weibo['time']
             print weibo['content']
             print weibo['attitude'] + '  ',
@@ -42,9 +43,17 @@ class sina_weibo():
 
     def save2markdown(self):
         filename = self.basic_info['username'] + '.md'
+        dir_path = 'output file/' + self.basic_info['username'] + '/'
+        # If folder does not exist.
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+            print 'Create fold: "' + dir_path + '" succeed.'
+        filename = dir_path + filename
         bp = '&nbsp;&nbsp;'
         try:
             f = open(filename, 'w')
+            print '\n' + '-'*40 + '\n'
+            print '开始写入Markdown文件...\n'
             line_list = list()
             #line_list.append('### Basic information:\n')
             line_list.append('- 昵称：' + self.basic_info['username'] + bp*6)
@@ -72,4 +81,6 @@ class sina_weibo():
 
         finally:
             f.close()
+            print '成功生成Markdown文件，保存于： ' + filename
+            print '\n' + '-'*40 + '\n\n'
 
