@@ -55,7 +55,7 @@ def get_weibo_content(filename):
         cnt = 1
         result = list()
         if entrys:
-            print '获取到共%d条内容。' % (len(entrys))
+            print '共获取到%d条内容。' % (len(entrys))
             for entry in entrys:
                 weibo = dict()
                 weibo['cnt'] = cnt
