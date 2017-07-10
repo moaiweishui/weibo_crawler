@@ -80,7 +80,6 @@ class WapWeiboCrawler():
         return filename
 
 
-
 if __name__ == '__main__':
     username = raw_input('请输入用户名:\n')
     password = raw_input('请输入密码：\n')
