@@ -24,9 +24,10 @@ user.get_weibo_content(filename)
 user.save2markdown()
 '''
 
-
+print '\n\n' + '-'*40 + '\n'
 username = raw_input('请输入用户名:\n')
 password = raw_input('请输入密码：\n')
+print '\n'
 weibo_crawler = WapWeiboCrawler(username, password)
 weibo_crawler.log_in()
 
@@ -38,7 +39,7 @@ user.get_basic_info(home_page)
 user.display_basic_info()
 
 page_num = raw_input('请输入需要获取的页数：')
-filename = weibo_crawler.get_content(user.user_id, int(page_num))
+filename = weibo_crawler.get_content(user.user_id, user.basic_info['username'], int(page_num))
 
 user.get_weibo_content(filename)
 #user.display_weibo_content()
