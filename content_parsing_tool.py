@@ -46,32 +46,35 @@ def get_basic_info(homepage_content):
 
 def get_weibo_content(filename):
     try:
+        # Open local file.
         f = open(filename, 'r')
         content = f.read()
+        # Match weibo entry. 
         pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>.*?<a href="https://weibo.cn/attitude.*?">(.*?)</a>.*?<a href="https://weibo.cn/repost.*?">(.*?)</a>.*?<a class="cc" href="https://weibo.cn/comment.*?">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>', re.S)
-        items = re.findall(pattern, content)
+        entrys = re.findall(pattern, content)
         cnt = 1
         result = list()
-        if items:
-            print '获取到共%d条内容。' % (len(items))
-            
-            for item in items:
+        if entrys:
+            print '获取到共%d条内容。' % (len(entrys))
+            for entry in entrys:
                 weibo = dict()
                 weibo['cnt'] = cnt
-                weibo['content'] = item[0].strip()
+                weibo['content'] = entry[0].strip()
+                # Match hyperlink.
                 pattern = re.compile('<a href="(.*?)">(.*?)</a>', re.S)
-                topic = re.findall(pattern, weibo['content'].encode('utf-8'))
-                if topic:
+                hyperlink = re.findall(pattern, weibo['content'].encode('utf-8'))
+                # If this weibo entry include hyperlink.
+                if hyperlink:
+                    # Remove redundant spacing and line break.
                     pattern = re.compile('(.*?)<a href="(.*?)">(.*?)</a>(.*?)', re.S)
-                    processed_content = re.findall(pattern, weibo['content'].encode('utf-8'))
+                    hyperlink_content = re.findall(pattern, weibo['content'].encode('utf-8'))
                     weibo['content'] = ''
-                    for x in processed_content:
+                    for x in hyperlink_content:
                         weibo['content'] = weibo['content'] + x[0].strip() + '<a href="' + x[1].strip() + '">' + x[2].strip() + '</a>' + x[3]
-
-                weibo['attitude'] = item[1].strip()
-                weibo['repost'] = item[2].strip()
-                weibo['comment'] = item[3].strip()
-                weibo['time'] = item[4].strip()
+                weibo['attitude'] = entry[1].strip()
+                weibo['repost'] = entry[2].strip()
+                weibo['comment'] = entry[3].strip()
+                weibo['time'] = entry[4].strip()
                 result.append(weibo)
                 cnt = cnt + 1
         else:
