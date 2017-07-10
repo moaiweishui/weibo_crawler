@@ -8,7 +8,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from content_parsing_tool import *
+from sina_weibo import *
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -44,7 +44,7 @@ class WapWeiboCrawler():
         self.post_data['password'] = self.password
         response = self.session.post(self.login_url, data=self.post_data, headers=self.headers)
         if response.status_code == 200:
-            print "模拟登陆成功,当前登陆账号为：" + username
+            print "模拟登陆成功,当前登陆账号为：" + self.username
         else:
             raise Exception("模拟登陆失败")
     
@@ -52,26 +52,20 @@ class WapWeiboCrawler():
         page = self.session.get(url)
         return page.content
 
-    def get_content(self):
-        filename = raw_input('请输入文件名:\n')
+    def get_homepage(self, user_id):
+        baseURL = 'https://weibo.cn/u/' + user_id
+        home_page = BeautifulSoup(self.get_page(baseURL), 'lxml').prettify()
+        return home_page
+
+    def get_content(self, user_id, page_num):
+        print '\n----------------------------------------\n'
+        print '开始获取ID为%s用户的前%d页微博内容...\n' % (user_id, page_num)
+        filename = raw_input('请输入你要保存的文件名: ')
         try:
             f = open(filename, 'w')
-            user_id = raw_input('请输入需要爬取的用户ID:\n')
-            baseURL = 'https://weibo.cn/u/' + user_id
-            home_page = BeautifulSoup(self.get_page(baseURL), 'lxml').prettify()
-            basic_info = get_basic_info(home_page)
-            print '\n\n----------------------------------------\n'
-            print '昵称：' + basic_info['username'] + '    ', 
-            print basic_info['sex'] + '/' + basic_info['region'] + '\n'
-            print basic_info['weibo_num'] + '  |  ',
-            print basic_info['follow'] + '  |  ',
-            print basic_info['fans'] + '\n'
-            print '简介：' + basic_info['signature']
-            print '\n----------------------------------------\n\n'
-            print '该用户共有微博内容%d页,' % (int(basic_info['page_num']))
-            page_number = raw_input('请输入需要爬取的页数:\n')
-            for i in range(int(page_number)):
-                url = baseURL + '?page=' + str(i+1)
+            base_url = 'https://weibo.cn/u/' + user_id
+            for i in range(int(page_num)):
+                url = base_url + '?page=' + str(i+1)
                 time.sleep(2)
                 page = self.get_page(url)
                 if page:
@@ -83,6 +77,8 @@ class WapWeiboCrawler():
                     print "Get page failed."
         finally:
             f.close()
+        return filename
+
 
 
 if __name__ == '__main__':
@@ -90,5 +86,12 @@ if __name__ == '__main__':
     password = raw_input('请输入密码：\n')
     weibo_crawler = WapWeiboCrawler(username, password)
     weibo_crawler.log_in()
-    weibo_crawler.get_content()
+    
+    user_id = '1523456657'
+    user = sina_weibo(user_id)
+    home_page = weibo_crawler.get_homepage(user.user_id)
+    user.get_basic_info(home_page)
+    user.display_basic_info()
+    
+    filename = weibo_crawler.get_content(user.user_id, 2)
 
