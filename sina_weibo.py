@@ -12,11 +12,8 @@ class sina_weibo():
         self.user_id = user_id
         self.base_url = base_url
         self.home_page = home_page
-        self.basic_info = dict()
-        self.weibo_content = dict()
-
-    def get_basic_info(self):
         self.basic_info = get_basic_info(self.home_page)
+        self.weibo_content = dict()
 
     def display_basic_info(self):
         print '\n\n----------------------------------------\n'
