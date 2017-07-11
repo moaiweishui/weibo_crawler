@@ -13,12 +13,12 @@ if DEBUG:
     filename = raw_input('请输入文件名:\n')
     filename = 'output file/' + filename
     try:
-        f = open(filename, 'r')
-        content = f.read()
-        user = sina_weibo('1523456657')
-        user.get_basic_info(content)
-    finally:
-        f.close()
+        with open(filename, 'r') as f:
+            content = f.read()
+            user = sina_weibo('1523456657')
+            user.get_basic_info(content)
+    except::
+        print 'Error occurs while reading file.'
 
     user.display_basic_info()
 
