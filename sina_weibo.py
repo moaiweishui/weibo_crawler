@@ -36,6 +36,7 @@ class sina_weibo():
             print '\n' + '-'*40
             print weibo['cnt'], weibo['time']
             print weibo['content']
+            print weibo['pic']
             print weibo['attitude'] + '  ',
             print weibo['repost'] + '  ',
             print weibo['comment'] + '  '
@@ -72,6 +73,9 @@ class sina_weibo():
                 line_list.append('> ' + str(weibo['cnt']) + bp*3)
                 line_list.append(weibo['time'] + '\n\n')
                 line_list.append('> ' + weibo['content'] + '\n\n')
+                # If include pic
+                if weibo['pic']:
+                    line_list.append('> [![' + weibo['pic'] + '](' + weibo['pic'] + ')](' +weibo['origin_pic_url'] + ')\n\n')
                 line_list.append('> ' + weibo['attitude'] + '  ')
                 line_list.append(weibo['repost'] + '  ')
                 line_list.append(weibo['comment'] + '  ')
