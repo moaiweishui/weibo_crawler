@@ -52,7 +52,7 @@ def get_weibo_content(filename):
         print '开始解析微博内容...\n'
         content = f.read()
         # Match weibo entry. 
-        pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>.*?<a href="https://weibo.cn/attitude.*?">(.*?)</a>.*?<a href="https://weibo.cn/repost.*?">(.*?)</a>.*?<a class="cc" href="https://weibo.cn/comment.*?">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>', re.S)
+        pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>(.*?)<a href="https://weibo.cn/attitude.*?">(.*?)</a>.*?<a href="https://weibo.cn/repost.*?">(.*?)</a>.*?<a class="cc" href="https://weibo.cn/comment(.*?)">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>', re.S)
         entrys = re.findall(pattern, content)
         cnt = 1
         result = list()
@@ -73,10 +73,22 @@ def get_weibo_content(filename):
                     weibo['content'] = ''
                     for x in hyperlink_content:
                         weibo['content'] = weibo['content'] + x[0].strip() + '<a href="' + x[1].strip() + '">' + x[2].strip() + '</a>' + x[3]
-                weibo['attitude'] = entry[1].strip()
-                weibo['repost'] = entry[2].strip()
-                weibo['comment'] = entry[3].strip()
-                weibo['time'] = entry[4].strip()
+                #<a href="https://weibo.cn/mblog/pic(.*?)">(.*?)</a>
+                weibo['pic'] = entry[1].strip()
+                if weibo['pic']:
+                    pattern = re.compile('.*?<a href="https://weibo.cn/mblog/pic(.*?)">.*?<img.*?src="(.*?)"/>.*?</a>.*?', re.S)
+                    pic_content = re.findall(pattern, weibo['pic'].encode('utf-8'))
+                    for x in pic_content:
+                        weibo['origin_pic_url'] = 'https://weibo.cn/mblog/pic' + x[0]
+                        weibo['pic'] = x[1]
+                else:
+                    weibo['origin_pic_url'] = ''
+                weibo['attitude'] = entry[2].strip()
+                weibo['repost'] = entry[3].strip()
+                # Url where include origin comment information.
+                weibo['comment_url'] = 'https://weibo.cn/comment' + entry[4].strip()
+                weibo['comment'] = entry[5].strip()
+                weibo['time'] = entry[6].strip()
                 result.append(weibo)
                 cnt = cnt + 1
         else:
