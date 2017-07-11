@@ -52,39 +52,38 @@ class sina_weibo():
         filename = dir_path + filename
         bp = '&nbsp;&nbsp;'
         try:
-            f = open(filename, 'w')
-            print '\n' + '-'*40 + '\n'
-            print '开始写入Markdown文件...\n'
-            line_list = list()
-            #line_list.append('### Basic information:\n')
-            line_list.append('- 昵称：' + self.basic_info['username'] + bp*6)
-            line_list.append(self.basic_info['sex'] + '/' + self.basic_info['region'] + '\n\n')
-            line_list.append('- ' + self.basic_info['weibo_num'] + bp*4 + '|' + bp*4)
-            line_list.append(self.basic_info['follow'] +  bp*4 + '|' + bp*4)
-            line_list.append(self.basic_info['fans'] + '\n')
-            f.writelines(line_list)
+            with open(filename, 'w') as f:
+                print '\n' + '-'*40 + '\n'
+                print '开始写入Markdown文件...\n'
+                line_list = list()
+                #line_list.append('### Basic information:\n')
+                line_list.append('- 昵称：' + self.basic_info['username'] + bp*6)
+                line_list.append(self.basic_info['sex'] + '/' + self.basic_info['region'] + '\n\n')
+                line_list.append('- ' + self.basic_info['weibo_num'] + bp*4 + '|' + bp*4)
+                line_list.append(self.basic_info['follow'] +  bp*4 + '|' + bp*4)
+                line_list.append(self.basic_info['fans'] + '\n')
+                f.writelines(line_list)
 
-            line_list = []
-            #line_list.append('\n\n### Weibo content:\n')
-            cnt = 0
-            for weibo in self.weibo_content:
-                cnt = cnt + 1
-                line_list.append('***\n')
-                line_list.append('> ' + str(weibo['cnt']) + bp*3)
-                line_list.append(weibo['time'] + '\n\n')
-                line_list.append('> ' + weibo['content'] + '\n\n')
-                # If include pic
-                if weibo['pic']:
-                    line_list.append('> [![' + weibo['pic'] + '](' + weibo['pic'] + ')](' +weibo['origin_pic_url'] + ')\n\n')
-                line_list.append('> ' + weibo['attitude'] + '  ')
-                line_list.append(weibo['repost'] + '  ')
-                line_list.append(weibo['comment'] + '  ')
-                line_list.append('\n\n')
+                line_list = []
+                #line_list.append('\n\n### Weibo content:\n')
+                cnt = 0
+                for weibo in self.weibo_content:
+                    cnt = cnt + 1
+                    line_list.append('***\n')
+                    line_list.append('> ' + str(weibo['cnt']) + bp*3)
+                    line_list.append(weibo['time'] + '\n\n')
+                    line_list.append('> ' + weibo['content'] + '\n\n')
+                    # If include pic
+                    if weibo['pic']:
+                        line_list.append('> [![' + weibo['pic'] + '](' + weibo['pic'] + ')](' +weibo['origin_pic_url'] + ')\n\n')
+                    line_list.append('> ' + weibo['attitude'] + '  ')
+                    line_list.append(weibo['repost'] + '  ')
+                    line_list.append(weibo['comment'] + '  ')
+                    line_list.append('\n\n')
 
-            f.writelines(line_list)
+                f.writelines(line_list)
+        except:
+            print 'Error occurs while writing file.'
 
-        finally:
-            f.close()
-            print '成功生成Markdown文件，保存于： ' + filename
-            print '\n' + '-'*40 + '\n\n'
-
+        print '成功生成Markdown文件，保存于： ' + filename
+        print '\n' + '-'*40 + '\n\n'

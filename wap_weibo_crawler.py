@@ -70,22 +70,23 @@ class WapWeiboCrawler():
             print 'Create fold: "' + dir_path + '" succeed.'
         filename = dir_path + filename
         try:
-            f = open(filename, 'w')
-            base_url = 'https://weibo.cn/u/' + user_id
-            for i in range(int(page_num)):
-                url = base_url + '?page=' + str(i+1)
-                time.sleep(2)
-                page = self.get_page(url)
-                if page:
-                    print "Get page succeed:",
-                    print url
-                    soup = BeautifulSoup(page, 'lxml')
-                    f.write(soup.prettify())
-                else:
-                    print "Get page failed."
-        finally:
-            f.close()
-            print '\n获取内容完成，文件保存于：' + filename + '\n'
+            with open(filename, 'w') as f:
+                base_url = 'https://weibo.cn/u/' + user_id
+                for i in range(int(page_num)):
+                    url = base_url + '?page=' + str(i+1)
+                    time.sleep(2)
+                    page = self.get_page(url)
+                    if page:
+                        print "Get page succeed:",
+                        print url
+                        soup = BeautifulSoup(page, 'lxml')
+                        f.write(soup.prettify())
+                    else:
+                        print "Get page failed."
+        except:
+            print 'Error occurs while writing file.'
+        
+        print '\n获取内容完成，文件保存于：' + filename + '\n'
 
         return filename
 

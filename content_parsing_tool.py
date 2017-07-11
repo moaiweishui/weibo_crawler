@@ -47,54 +47,54 @@ def get_basic_info(homepage_content):
 def get_weibo_content(filename):
     try:
         # Open local file.
-        f = open(filename, 'r')
-        print '-'*40 + '\n'
-        print '开始解析微博内容...\n'
-        content = f.read()
-        # Match weibo entry. 
-        pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>(.*?)<a href="https://weibo.cn/attitude.*?">(.*?)</a>.*?<a href="https://weibo.cn/repost.*?">(.*?)</a>.*?<a class="cc" href="https://weibo.cn/comment(.*?)">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>', re.S)
-        entrys = re.findall(pattern, content)
-        cnt = 1
-        result = list()
-        if entrys:
-            print '共获取到%d条微博。' % (len(entrys))
-            for entry in entrys:
-                weibo = dict()
-                weibo['cnt'] = cnt
-                weibo['content'] = entry[0].strip()
-                # Match hyperlink.
-                pattern = re.compile('<a href="(.*?)">(.*?)</a>', re.S)
-                hyperlink = re.findall(pattern, weibo['content'].encode('utf-8'))
-                # If this weibo entry include hyperlink.
-                if hyperlink:
-                    # Remove redundant spacing and line break.
-                    pattern = re.compile('(.*?)<a href="(.*?)">(.*?)</a>(.*?)', re.S)
-                    hyperlink_content = re.findall(pattern, weibo['content'].encode('utf-8'))
-                    weibo['content'] = ''
-                    for x in hyperlink_content:
-                        weibo['content'] = weibo['content'] + x[0].strip() + '<a href="' + x[1].strip() + '">' + x[2].strip() + '</a>' + x[3]
-                #<a href="https://weibo.cn/mblog/pic(.*?)">(.*?)</a>
-                weibo['pic'] = entry[1].strip()
-                if weibo['pic']:
-                    pattern = re.compile('.*?<a href="https://weibo.cn/mblog/pic(.*?)">.*?<img.*?src="(.*?)"/>.*?</a>.*?', re.S)
-                    pic_content = re.findall(pattern, weibo['pic'].encode('utf-8'))
-                    for x in pic_content:
-                        weibo['origin_pic_url'] = 'https://weibo.cn/mblog/pic' + x[0]
-                        weibo['pic'] = x[1]
-                else:
-                    weibo['origin_pic_url'] = ''
-                weibo['attitude'] = entry[2].strip()
-                weibo['repost'] = entry[3].strip()
-                # Url where include origin comment information.
-                weibo['comment_url'] = 'https://weibo.cn/comment' + entry[4].strip()
-                weibo['comment'] = entry[5].strip()
-                weibo['time'] = entry[6].strip()
-                result.append(weibo)
-                cnt = cnt + 1
-        else:
-            print '未能获取到微博内容。'
-    finally:
-        f.close()
+        with open(filename, 'r') as f:
+            print '-'*40 + '\n'
+            print '开始解析微博内容...\n'
+            content = f.read()
+            # Match weibo entry. 
+            pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>(.*?)<a href="https://weibo.cn/attitude.*?">(.*?)</a>.*?<a href="https://weibo.cn/repost.*?">(.*?)</a>.*?<a class="cc" href="https://weibo.cn/comment(.*?)">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>', re.S)
+            entrys = re.findall(pattern, content)
+            cnt = 1
+            result = list()
+            if entrys:
+                print '共获取到%d条微博。' % (len(entrys))
+                for entry in entrys:
+                    weibo = dict()
+                    weibo['cnt'] = cnt
+                    weibo['content'] = entry[0].strip()
+                    # Match hyperlink.
+                    pattern = re.compile('<a href="(.*?)">(.*?)</a>', re.S)
+                    hyperlink = re.findall(pattern, weibo['content'].encode('utf-8'))
+                    # If this weibo entry include hyperlink.
+                    if hyperlink:
+                        # Remove redundant spacing and line break.
+                        pattern = re.compile('(.*?)<a href="(.*?)">(.*?)</a>(.*?)', re.S)
+                        hyperlink_content = re.findall(pattern, weibo['content'].encode('utf-8'))
+                        weibo['content'] = ''
+                        for x in hyperlink_content:
+                            weibo['content'] = weibo['content'] + x[0].strip() + '<a href="' + x[1].strip() + '">' + x[2].strip() + '</a>' + x[3]
+                    #<a href="https://weibo.cn/mblog/pic(.*?)">(.*?)</a>
+                    weibo['pic'] = entry[1].strip()
+                    if weibo['pic']:
+                        pattern = re.compile('.*?<a href="https://weibo.cn/mblog/pic(.*?)">.*?<img.*?src="(.*?)"/>.*?</a>.*?', re.S)
+                        pic_content = re.findall(pattern, weibo['pic'].encode('utf-8'))
+                        for x in pic_content:
+                            weibo['origin_pic_url'] = 'https://weibo.cn/mblog/pic' + x[0]
+                            weibo['pic'] = x[1]
+                    else:
+                        weibo['origin_pic_url'] = ''
+                    weibo['attitude'] = entry[2].strip()
+                    weibo['repost'] = entry[3].strip()
+                    # Url where include origin comment information.
+                    weibo['comment_url'] = 'https://weibo.cn/comment' + entry[4].strip()
+                    weibo['comment'] = entry[5].strip()
+                    weibo['time'] = entry[6].strip()
+                    result.append(weibo)
+                    cnt = cnt + 1
+            else:
+                print '未能获取到微博内容。'
+    except:
+        print 'Error occurs while reading file.'
     
     return result
     
