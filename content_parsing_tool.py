@@ -52,7 +52,7 @@ def get_weibo_content(filename):
             print '开始解析微博内容...\n'
             content = f.read()
             # Match weibo entry. 
-            pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>(.*?)<a href="https://weibo.cn/attitude.*?">(.*?)</a>.*?<a href="https://weibo.cn/repost.*?">(.*?)</a>.*?<a class="cc" href="https://weibo.cn/comment(.*?)">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>', re.S)
+            pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>(.*?)<a href="https://weibo.cn/attitude.*?">(.*?)</a>(.*?[<a href="https://weibo.cn/repost.*?">.*?</a>|<span class="cmt">.*?</span>].*?)<a class="cc" href="https://weibo.cn/comment(.*?)">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>.*?<div class="s">.*?</div>', re.S)
             entrys = re.findall(pattern, content)
             cnt = 1
             result = list()
@@ -85,6 +85,13 @@ def get_weibo_content(filename):
                         del weibo['pic']
                     weibo['attitude'] = entry[2].strip()
                     weibo['repost'] = entry[3].strip()
+                    pattern = re.compile('<span class="cmt">(.*?)</span>', re.S)
+                    no_repost = re.findall(pattern, weibo['repost'].encode('utf-8'))
+                    if no_repost:
+                        weibo['repost'] = no_repost[0].strip()
+                    else:
+                        pattern = re.compile('<a href="https://weibo.cn/repost.*?">(.*?)</a>', re.S)
+                        weibo['repost'] = re.findall(pattern, weibo['repost'].encode('utf-8'))[0].strip()
                     # Url where include origin comment information.
                     weibo['comment_url'] = 'https://weibo.cn/comment' + entry[4].strip()
                     weibo['comment'] = entry[5].strip()
