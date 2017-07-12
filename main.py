@@ -7,7 +7,7 @@ from content_parsing_tool import *
 from sina_weibo import *
 from wap_weibo_crawler import *
 
-DEBUG = True
+DEBUG = False
 
 if DEBUG:
     filename = raw_input('请输入文件名:\n')
