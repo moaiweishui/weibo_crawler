@@ -11,13 +11,13 @@ DEBUG = True
 
 if DEBUG:
     filename = raw_input('请输入文件名:\n')
-    filename = 'output file/' + filename
+    filename = 'output file/' + filename + '.txt'
     try:
         with open(filename, 'r') as f:
             content = f.read()
             user = sina_weibo('1523456657')
             user.get_basic_info(content)
-    except::
+    except:
         print 'Error occurs while reading file.'
 
     user.display_basic_info()
@@ -49,16 +49,3 @@ else:
     user.save2markdown()
 
 
-
-
-'''
-weibo_list = get_weibo_content('wjy1.txt')
-for weibo in weibo_list:
-    print '\n----------------------------------------'
-    print weibo['cnt'], weibo['time']
-    print weibo['content']
-    print weibo['attitude'] + '  ',
-    print weibo['repost'] + '  ',
-    print weibo['comment'] + '  '
-    print '\n\n'
-'''

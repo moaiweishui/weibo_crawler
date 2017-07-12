@@ -82,7 +82,7 @@ def get_weibo_content(filename):
                             weibo['origin_pic_url'] = 'https://weibo.cn/mblog/pic' + x[0]
                             weibo['pic'] = x[1]
                     else:
-                        weibo['origin_pic_url'] = ''
+                        del weibo['pic']
                     weibo['attitude'] = entry[2].strip()
                     weibo['repost'] = entry[3].strip()
                     # Url where include origin comment information.

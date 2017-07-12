@@ -36,7 +36,9 @@ class sina_weibo():
             print '\n' + '-'*40
             print weibo['cnt'], weibo['time']
             print weibo['content']
-            print weibo['pic']
+            # If include pic 
+            if 'pic' in weibo.keys() and 'origin_pic_url' in weibo.keys():
+                print weibo['pic']
             print weibo['attitude'] + '  ',
             print weibo['repost'] + '  ',
             print weibo['comment'] + '  '
@@ -63,27 +65,28 @@ class sina_weibo():
                 line_list.append(self.basic_info['follow'] +  bp*4 + '|' + bp*4)
                 line_list.append(self.basic_info['fans'] + '\n')
                 f.writelines(line_list)
-
-                line_list = []
-                #line_list.append('\n\n### Weibo content:\n')
+                print 'Write basic information to markdown file succeed.\n'
                 cnt = 0
                 for weibo in self.weibo_content:
                     cnt = cnt + 1
-                    line_list.append('***\n')
-                    line_list.append('> ' + str(weibo['cnt']) + bp*3)
-                    line_list.append(weibo['time'] + '\n\n')
-                    line_list.append('> ' + weibo['content'] + '\n\n')
+                    line_list2 = list()
+                    line_list2.append('***\n')
+                    line_list2.append('> ' + str(weibo['cnt']) + bp*3)
+                    line_list2.append(weibo['time'] + '\n\n')
+                    line_list2.append('> ' + weibo['content'] + '\n\n')
                     # If include pic
-                    if weibo['pic']:
-                        line_list.append('> [![' + weibo['pic'] + '](' + weibo['pic'] + ')](' +weibo['origin_pic_url'] + ')\n\n')
-                    line_list.append('> ' + weibo['attitude'] + '  ')
-                    line_list.append(weibo['repost'] + '  ')
-                    line_list.append(weibo['comment'] + '  ')
-                    line_list.append('\n\n')
+                    if 'pic' in weibo.keys() and 'origin_pic_url' in weibo.keys():
+                        line_list2.append('> [![' + weibo['pic'] + '](' + weibo['pic'] + ')](' +weibo['origin_pic_url'] + ')\n\n')
+                    line_list2.append('> ' + weibo['attitude'] + '  ')
+                    line_list2.append(weibo['repost'] + '  ')
+                    line_list2.append(weibo['comment'] + '  ')
+                    line_list2.append('\n\n')
+                    f.writelines(line_list2)
 
-                f.writelines(line_list)
+                print 'Write weibo content to markdown file succeed.\n'
+                print '成功生成Markdown文件，保存于： ' + filename
+                print '\n' + '-'*40 + '\n\n'
         except:
             print 'Error occurs while writing file.'
 
-        print '成功生成Markdown文件，保存于： ' + filename
-        print '\n' + '-'*40 + '\n\n'
+        
