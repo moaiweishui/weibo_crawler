@@ -89,6 +89,7 @@ def get_weibo_content(filename):
                         
                     weibo['attitude'] = entry[2].strip()
                     
+                    # Match repost.
                     weibo['repost'] = entry[3].strip()
                     pattern = re.compile('<span class="cmt">(.*?)</span>', re.S)
                     no_repost = re.findall(pattern, weibo['repost'].encode('utf-8'))
