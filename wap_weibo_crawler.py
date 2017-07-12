@@ -72,15 +72,26 @@ class WapWeiboCrawler():
         try:
             with open(filename, 'w') as f:
                 base_url = 'https://weibo.cn/u/' + user_id
+                average_len = 0
                 for i in range(int(page_num)):
                     url = base_url + '?page=' + str(i+1)
+                    # Decrease frequence
                     time.sleep(2)
                     page = self.get_page(url)
                     if page:
+                        soup = BeautifulSoup(page, 'lxml')
+                        if not i:
+                            average_len = len(soup.prettify())
+                        if len(soup.prettify()) < average_len * 0.5 and i != int(page_num)-1:
+                            page = self.get_page(url)
+                            
                         print "Get page succeed:",
-                        print url
+                        print url, 
                         soup = BeautifulSoup(page, 'lxml')
                         f.write(soup.prettify())
+                        if i:
+                            average_len = (average_len * i + len(soup.prettify())) / (i + 1)
+                        #print len(soup.prettify())
                     else:
                         print "Get page failed."
                 print '\n获取内容完成，文件保存于：' + filename + '\n'
@@ -98,10 +109,16 @@ if __name__ == '__main__':
     weibo_crawler.log_in()
     
     user_id = '1523456657'
-    user = sina_weibo(user_id)
-    home_page = weibo_crawler.get_homepage(user.user_id)
-    user.get_basic_info(home_page)
-    user.display_basic_info()
+    baseURL = 'https://weibo.cn/u/' + user_id + '?page=' + str(79)
+    page = BeautifulSoup(weibo_crawler.get_page(baseURL), 'lxml').prettify()
+    f = open('single_page.txt', 'w')
+    f.write(page)
+    f.close()
+
+    #user = sina_weibo(user_id)
+    #home_page = weibo_crawler.get_homepage(user.user_id)
+    #user.get_basic_info(home_page)
+    #user.display_basic_info()
     
-    filename = weibo_crawler.get_content(user.user_id, 2)
+    #filename = weibo_crawler.get_content(user.user_id, 2)
 
