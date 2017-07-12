@@ -62,22 +62,14 @@ def get_weibo_content(filename):
                 for entry in entrys:
                     weibo = dict()
                     weibo['cnt'] = cnt
+
                     weibo['content'] = entry[0].strip()
                     
-                    # Match hyperlink.
-                    pattern = re.compile('<a href="(.*?)">(.*?)</a>', re.S)
-                    hyperlink = re.findall(pattern, weibo['content'].encode('utf-8'))
-                    # If this weibo entry include hyperlink.
-                    if hyperlink:
-                        # Remove redundant spacing and line break.
-                        pattern = re.compile('(.*?)<a href="(.*?)">(.*?)</a>(.*?)', re.S)
-                        hyperlink_content = re.findall(pattern, weibo['content'].encode('utf-8'))
-                        weibo['content'] = ''
-                        for x in hyperlink_content:
-                            weibo['content'] = weibo['content'] + x[0].strip() + '<a href="' + x[1].strip() + '">' + x[2].strip() + '</a>' + x[3]
-                    
-                    weibo['pic'] = entry[1].strip()
+                    # Parsing hyperlink.
+                    weibo['content'] = weibo_parsing_hyperlink(weibo['content'].encode('utf-8'))
+
                     # If this weibo entry include picture.
+                    weibo['pic'] = entry[1].strip()
                     if weibo['pic']:
                         pattern = re.compile('.*?<a href="https://weibo.cn/mblog/pic(.*?)">.*?<img.*?src="(.*?)"/>.*?</a>.*?', re.S)
                         pic_content = re.findall(pattern, weibo['pic'].encode('utf-8'))
@@ -89,16 +81,9 @@ def get_weibo_content(filename):
                         
                     weibo['attitude'] = entry[2].strip()
                     
-                    # Match repost.
+                    # Parsing repost.
                     weibo['repost'] = entry[3].strip()
-                    pattern = re.compile('<span class="cmt">(.*?)</span>', re.S)
-                    no_repost = re.findall(pattern, weibo['repost'].encode('utf-8'))
-                    # If this weibo forbid repost.
-                    if no_repost:
-                        weibo['repost'] = no_repost[0].strip()
-                    else:
-                        pattern = re.compile('<a href="https://weibo.cn/repost.*?">(.*?)</a>', re.S)
-                        weibo['repost'] = re.findall(pattern, weibo['repost'].encode('utf-8'))[0].strip()
+                    weibo['repost'] = weibo_parsing_repost(weibo['repost'].encode('utf-8'))
                         
                     # Url where include origin comment information.
                     weibo['comment_url'] = 'https://weibo.cn/comment' + entry[4].strip()
@@ -114,4 +99,36 @@ def get_weibo_content(filename):
     return result
     
 
+# Parsing hyperlink in weibo entry.
+def weibo_parsing_hyperlink(weibo_content):
+    # Match hyperlink
+    pattern = re.compile('<a href="(.*?)">(.*?)</a>', re.S)
+    hyperlink = re.findall(pattern, weibo_content)
+    # If this weibo entry include hyperlink.
+    if hyperlink:
+        # Remove redundant spacing and line break.
+        pattern = re.compile('(.*?)<a href="(.*?)">(.*?)</a>(.*?)', re.S)
+        hyperlink_content = re.findall(pattern, weibo_content)
+        result= ''
+        for x in hyperlink_content:
+            result = result + x[0].strip() + '<a href="' + x[1].strip() + '">' + x[2].strip() + '</a>' + x[3]
+    else:
+        result = weibo_content
 
+    return result
+    
+
+# Parsing repost information in weibo entry.
+def weibo_parsing_repost(weibo_repost):
+    # Match repost forbidden.
+    pattern = re.compile('<span class="cmt">(.*?)</span>', re.S)
+    forbid_repost = re.findall(pattern, weibo_repost)
+    # If this weibo forbid repost.
+    if forbid_repost:
+        result = forbid_repost[0].strip()
+    else:
+        pattern = re.compile('<a href="https://weibo.cn/repost.*?">(.*?)</a>', re.S)
+        result = re.findall(pattern, weibo_repost)[0].strip()
+
+    return result
+                     
