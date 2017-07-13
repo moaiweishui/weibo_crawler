@@ -129,7 +129,12 @@ class sina_weibo():
             os.mkdir(dir_path)
             print 'Create fold: "' + dir_path + '" succeed.'
         filename = dir_path + filename
+        print '\n' + '-'*40 + '\n'
+        print '开始写入csv文件...\n'
         self.weibo_df.to_csv(filename, index=False)
+        print '成功生成csv文件，保存于： ' + filename
+        print '\n' + '-'*40 + '\n\n'
+
 
         #self.weibo_df['time'].plot(kind='hist')
         #print dates.date2num(self.weibo_df['time'])#.plot.hist()
