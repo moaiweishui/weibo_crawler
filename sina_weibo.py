@@ -5,6 +5,8 @@ import os
 from datetime import datetime
 
 import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as dates
 
 from content_parsing_tool import *
 
@@ -17,7 +19,8 @@ class sina_weibo():
         self.user_id = user_id
         self.basic_info = dict()
         self.weibo_content = list()
-        self.weibo_df = pd.DataFrame(columns=['time',\
+        self.weibo_df = pd.DataFrame(columns=['cnt',\
+                'time',\
                 'from',\
                 'content',\
                 'attitude',\
@@ -37,18 +40,25 @@ class sina_weibo():
         print '简介：' + self.basic_info['signature']
         print '\n共有微博内容%d页' % (int(self.basic_info['page_num']))
         print '\n' + '-'*40 + '\n'
-
+    
+    # Fill weibo_content(type:list) and weibo_df(type:pd.dataframe).
     def get_weibo_content(self, filename):
         self.weibo_content = get_weibo_content(filename, self.current_time)
         for weibo in self.weibo_content:
             _list = list()
+            _list.append(weibo['cnt'])
             _list.append(weibo['time'])
             _list.append(weibo['from'])
             _list.append(weibo['content'])
-            _list.append(weibo['attitude'])
-            _list.append(weibo['repost'])
-            _list.append(weibo['comment'])
+            # Extract numeric value from attitude/repost/comment text.
+            _list.append(numeric_value_extration(weibo['attitude']))
+            _list.append(numeric_value_extration(weibo['repost']))
+            _list.append(numeric_value_extration(weibo['comment']))
             self.weibo_df.loc[int(weibo['cnt'])] = _list
+        # Convert float64 to int64
+        self.weibo_df['attitude'] = self.weibo_df['attitude'].astype(int)
+        self.weibo_df['repost'] = self.weibo_df['repost'].astype(int)
+        self.weibo_df['comment'] = self.weibo_df['comment'].astype(int)
 
         
     def display_weibo_content(self):
@@ -92,7 +102,7 @@ class sina_weibo():
                     line_list2 = list()
                     line_list2.append('***\n')
                     line_list2.append('> ' + str(weibo['cnt']) + bp*3)
-                    line_list2.append(weibo['time'] +' ' + weibo['from'] + '\n\n')
+                    line_list2.append(str(weibo['time']) +' ' + weibo['from'] + '\n\n')
                     line_list2.append('> ' + weibo['content'] + '\n\n')
                     # If include pic
                     if 'pic' in weibo.keys() and 'origin_pic_url' in weibo.keys():
@@ -110,8 +120,23 @@ class sina_weibo():
             print 'Error occurs while writing file.'
 
     def save2csv(self):
-        print self.weibo_df.loc[:, ['time', 'from', 'attitude', 'repost', 'comment']].head(10)
-        print self.weibo_df.loc[:, ['time', 'from', 'attitude', 'repost', 'comment']].tail(10)
+        #print self.weibo_df.loc[:, ['time', 'from', 'attitude', 'repost', 'comment']].head(10)
+        #print self.weibo_df.loc[:, ['time', 'from', 'attitude', 'repost', 'comment']].tail(10)
+        filename = self.basic_info['username'] + '.csv'
+        dir_path = 'output file/' + self.basic_info['username'] + '/'
+        # If folder does not exist.
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+            print 'Create fold: "' + dir_path + '" succeed.'
+        filename = dir_path + filename
+        self.weibo_df.to_csv(filename, index=False)
+
+        #self.weibo_df['time'].plot(kind='hist')
+        #print dates.date2num(self.weibo_df['time'])#.plot.hist()
+        #plt.figure()
+        #plt.plot_date(self.weibo_df['time'], (len(self.weibo_df) - self.weibo_df['cnt']),\
+        #       markersize = 0.5)
+        #plt.show()
 
         return
 
