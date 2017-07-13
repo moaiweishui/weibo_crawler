@@ -156,6 +156,7 @@ def weibo_parsing_time_from(weibo_time, current_time):
                 + month + '-'\
                 + day
         _date_time = _date_time + ' ' + _list[1]
+        _date_time = datetime.strptime(_date_time, '%Y-%m-%d %H:%M')
     elif len(_list[0].split('-')) == 1:
         pattern = re.compile('(.*?)月(.*?)日', re.S)
         result = re.search(pattern, _list[0])
@@ -165,15 +166,32 @@ def weibo_parsing_time_from(weibo_time, current_time):
                 + month + '-'\
                 + day
         _date_time = _date_time + ' ' + _list[1]
+        _date_time = datetime.strptime(_date_time, '%Y-%m-%d %H:%M')
     else:
         _date_time = _list[0] + ' ' + _list[1]
-
+        _date_time = datetime.strptime(_date_time, '%Y-%m-%d %H:%M:%S')
+    #datetime.strptime(_date_time, '%Y-%m-%d %H:%M')
     pattern = re.compile('.*?<a href.*?>(.*?)</a>.*?', re.S)
     result = re.search(pattern, _list[2])
     if result:
         _from = result.group(1).strip()
     else:
         _from = _list[2]
+    # Must use greedy mode
+    pattern = re.compile('来自(.*)', re.S)
+    result = re.search(pattern, _from)
+    if result:
+        _from = result.group(1).strip()
+        None
 
     return _date_time, _from
-                     
+    
+
+# Extract numeric value from input text.
+def numeric_value_extration(input_text):
+    pattern = re.compile('(.*?)\[(.*?)\]', re.S)
+    result = re.search(pattern, input_text)
+    if result.group(1) in ['赞', '转发', '评论']:
+        return int(result.group(2).strip())
+    else:
+        return 'Input text do not have numeric value.'
