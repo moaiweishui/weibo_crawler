@@ -10,8 +10,7 @@ from wap_weibo_crawler import *
 DEBUG = True
 
 if DEBUG:
-    #filename = raw_input('请输入文件名:\n')
-    filename = 'syg'
+    filename = raw_input('请输入文件名:\n')
     filename = 'output file/' + filename + '.txt'
     try:
         with open(filename, 'r') as f:
