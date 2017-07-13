@@ -2,6 +2,9 @@
 
 import sys
 import os
+from datetime import datetime
+
+import pandas as pd
 
 from content_parsing_tool import *
 
@@ -10,9 +13,16 @@ sys.setdefaultencoding("utf-8")
 
 class sina_weibo():
     def __init__(self, user_id):
+        self.current_time = datetime.now()
         self.user_id = user_id
         self.basic_info = dict()
         self.weibo_content = list()
+        self.weibo_df = pd.DataFrame(columns=['time',\
+                'from',\
+                'content',\
+                'attitude',\
+                'repost',\
+                'comment'])
 
     def get_basic_info(self, home_page):
         self.basic_info = get_basic_info(home_page)
@@ -29,8 +39,18 @@ class sina_weibo():
         print '\n' + '-'*40 + '\n'
 
     def get_weibo_content(self, filename):
-        self.weibo_content = get_weibo_content(filename)
+        self.weibo_content = get_weibo_content(filename, self.current_time)
+        for weibo in self.weibo_content:
+            _list = list()
+            _list.append(weibo['time'])
+            _list.append(weibo['from'])
+            _list.append(weibo['content'])
+            _list.append(weibo['attitude'])
+            _list.append(weibo['repost'])
+            _list.append(weibo['comment'])
+            self.weibo_df.loc[int(weibo['cnt'])] = _list
 
+        
     def display_weibo_content(self):
         for weibo in self.weibo_content:
             print '\n' + '-'*40
@@ -72,7 +92,7 @@ class sina_weibo():
                     line_list2 = list()
                     line_list2.append('***\n')
                     line_list2.append('> ' + str(weibo['cnt']) + bp*3)
-                    line_list2.append(weibo['time'] + '\n\n')
+                    line_list2.append(weibo['time'] +' ' + weibo['from'] + '\n\n')
                     line_list2.append('> ' + weibo['content'] + '\n\n')
                     # If include pic
                     if 'pic' in weibo.keys() and 'origin_pic_url' in weibo.keys():
@@ -88,5 +108,12 @@ class sina_weibo():
                 print '\n' + '-'*40 + '\n\n'
         except:
             print 'Error occurs while writing file.'
+
+    def save2csv(self):
+        print self.weibo_df.loc[:, ['time', 'from', 'attitude', 'repost', 'comment']].head(10)
+        print self.weibo_df.loc[:, ['time', 'from', 'attitude', 'repost', 'comment']].tail(10)
+
+        return
+
 
         

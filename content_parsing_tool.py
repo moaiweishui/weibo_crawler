@@ -4,6 +4,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 import re
+from datetime import datetime
 
 
 def get_basic_info(homepage_content):
@@ -44,7 +45,7 @@ def get_basic_info(homepage_content):
     return basic_info
 
 
-def get_weibo_content(filename):
+def get_weibo_content(filename, current_time):
     try:
         # Open local file.
         with open(filename, 'r') as f:
@@ -89,6 +90,7 @@ def get_weibo_content(filename):
                     weibo['comment_url'] = 'https://weibo.cn/comment' + entry[4].strip()
                     weibo['comment'] = entry[5].strip()
                     weibo['time'] = entry[6].strip()
+                    weibo['time'], weibo['from'] = weibo_parsing_time_from(weibo['time'], current_time)
                     result.append(weibo)
                     cnt = cnt + 1
             else:
@@ -131,4 +133,47 @@ def weibo_parsing_repost(weibo_repost):
         result = re.findall(pattern, weibo_repost)[0].strip()
 
     return result
+
+
+# Parsing time and from
+def weibo_parsing_time_from(weibo_time, current_time):
+    _list = []
+    # Date
+    _list.append(weibo_time.split(' ', 1)[0])
+    # Time
+    _list.append(weibo_time.split(' ', 1)[1].split('\xc2\xa0', 1)[0])
+    # From
+    _list.append(weibo_time.split(' ', 1)[1].split('\xc2\xa0', 1)[1])
+
+    if _list[0] == '今天':
+        month = str(current_time.month)
+        day = str(current_time.day)
+        if len(month) == 1:
+            month = '0' + month
+        if len(day) == 1:
+            day = '0' + day
+        _date_time = str(current_time.year) + '-'\
+                + month + '-'\
+                + day
+        _date_time = _date_time + ' ' + _list[1]
+    elif len(_list[0].split('-')) == 1:
+        pattern = re.compile('(.*?)月(.*?)日', re.S)
+        result = re.search(pattern, _list[0])
+        month = result.group(1)
+        day = result.group(2)
+        _date_time = str(current_time.year) + '-'\
+                + month + '-'\
+                + day
+        _date_time = _date_time + ' ' + _list[1]
+    else:
+        _date_time = _list[0] + ' ' + _list[1]
+
+    pattern = re.compile('.*?<a href.*?>(.*?)</a>.*?', re.S)
+    result = re.search(pattern, _list[2])
+    if result:
+        _from = result.group(1).strip()
+    else:
+        _from = _list[2]
+
+    return _date_time, _from
                      
