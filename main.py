@@ -7,10 +7,11 @@ from content_parsing_tool import *
 from sina_weibo import *
 from wap_weibo_crawler import *
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
-    filename = raw_input('请输入文件名:\n')
+    #filename = raw_input('请输入文件名:\n')
+    filename = 'syg'
     filename = 'output file/' + filename + '.txt'
     try:
         with open(filename, 'r') as f:
@@ -25,6 +26,7 @@ if DEBUG:
     user.get_weibo_content(filename)
     #user.display_weibo_content()
     user.save2markdown()
+    user.save2csv()
 
 else:
     print '\n\n' + '-'*40 + '\n'
@@ -35,7 +37,7 @@ else:
     weibo_crawler.log_in()
 
     user_id = '1523456657'
-    user_id = '1654301217'
+    #user_id = '1654301217'
     user = sina_weibo(user_id)
     home_page = weibo_crawler.get_homepage(user.user_id)
     user.get_basic_info(home_page)
