@@ -135,13 +135,15 @@ class sina_weibo():
         print '成功生成csv文件，保存于： ' + filename
         print '\n' + '-'*40 + '\n\n'
 
-
+    # Display the weibo cnt-time chart
+    def display_frequency(self):
         #self.weibo_df['time'].plot(kind='hist')
         #print dates.date2num(self.weibo_df['time'])#.plot.hist()
-        #plt.figure()
-        #plt.plot_date(self.weibo_df['time'], (len(self.weibo_df) - self.weibo_df['cnt']),\
-        #       markersize = 0.5)
-        #plt.show()
+        plt.figure()
+        plt.plot_date(self.weibo_df['time'], (len(self.weibo_df) - self.weibo_df['cnt']),\
+               markersize = 0.5)
+        plt.show()
+
 
         return
 
