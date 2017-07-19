@@ -7,6 +7,7 @@ from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
+import numpy as np
 
 from content_parsing_tool import *
 
@@ -137,13 +138,28 @@ class sina_weibo():
 
     # Display the weibo cnt-time chart
     def display_frequency(self):
-        #self.weibo_df['time'].plot(kind='hist')
-        #print dates.date2num(self.weibo_df['time'])#.plot.hist()
-        plt.figure()
-        plt.plot_date(self.weibo_df['time'], (len(self.weibo_df) - self.weibo_df['cnt']),\
-               markersize = 0.5)
-        plt.show()
 
+        _time_series = self.weibo_df['time'].astype(str)
+        _time_series = _time_series.apply(lambda x: int(x.split()[1].split(':')[0]))
+
+        fig, ax = plt.subplots(2, 1)
+
+        ax[0].set_title('Weibo quantity growth curve(All time)')
+        ax[0].plot_date(self.weibo_df['time'], \
+                (len(self.weibo_df) - self.weibo_df['cnt']),\
+                color='lawngreen',\
+                markersize=1)
+        ax[0].set_xlabel('Date(Year-Month)')
+        ax[0].set_ylabel('Weibo Number')
+        
+        ax[1].set_title('Weibo send time distribution(24 Hour)')
+        ax[1].hist(_time_series, bins = 24, facecolor='lawngreen', alpha=0.75)
+        ax[1].set_xticks(np.linspace(0, 23, 24))
+        ax[1].set_xlabel('Time(Hour)')
+        ax[1].set_ylabel('Weibo Number')
+        
+        fig.subplots_adjust(hspace=0.6)
+        plt.show()
 
         return
 
