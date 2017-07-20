@@ -137,28 +137,55 @@ class sina_weibo():
         print '\n' + '-'*40 + '\n\n'
 
     # Display the weibo cnt-time chart
-    def display_frequency(self):
-
+    def display_time_distribution(self):
         _time_series = self.weibo_df['time'].astype(str)
-        _time_series = _time_series.apply(lambda x: int(x.split()[1].split(':')[0]))
+        date_range = pd.date_range(_time_series[len(_time_series)], _time_series[1], freq='M').values
+        date_delta = int(len(date_range)/15)
+        date_list = []
+        date_label_list = []
+        cnt = 0
+        for date in date_range:
+            if cnt % date_delta == 0:
+                date_list.append(date)
+                date_label_list.append('-'.join(str(date).split('T')[0].split('-')[0:2]))
+            cnt += 1
+        distribution_in_day = _time_series.apply(lambda x: int(x.split()[1].split(':')[0])).value_counts()
 
-        fig, ax = plt.subplots(2, 1)
+        fig, ax = plt.subplots(2, 1, figsize=(6, 6))
 
+        # Display weibo quantity growth curve(All time)
         ax[0].set_title('Weibo quantity growth curve(All time)')
         ax[0].plot_date(self.weibo_df['time'], \
                 (len(self.weibo_df) - self.weibo_df['cnt']),\
                 color='lawngreen',\
                 markersize=1)
+        ax[0].set_xticks(date_list)
+        ax[0].set_xticklabels(date_label_list, rotation=300, fontsize='small')
         ax[0].set_xlabel('Date(Year-Month)')
         ax[0].set_ylabel('Weibo Number')
         
+        # Display weibo send time distribution(24 Hour)
         ax[1].set_title('Weibo send time distribution(24 Hour)')
-        ax[1].hist(_time_series, bins = 24, facecolor='lawngreen', alpha=0.75)
+        ax[1].bar(distribution_in_day.index, distribution_in_day.values,\
+                color='lawngreen')
         ax[1].set_xticks(np.linspace(0, 23, 24))
+        ax[1].set_xticklabels(pd.Series(np.linspace(0, 23, 24)).astype(int).apply(lambda x: str(x)).values)
         ax[1].set_xlabel('Time(Hour)')
         ax[1].set_ylabel('Weibo Number')
-        
-        fig.subplots_adjust(hspace=0.6)
+
+        fig.subplots_adjust(hspace=0.8)
+
+        # Save picture to local
+        picname = self.basic_info['username'] + '_time_distribution.png'
+        dir_path = 'output file/' + self.basic_info['username'] + '/'
+        # If folder does not exist.
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)
+            print 'Create fold: "' + dir_path + '" succeed.'
+        picname = dir_path + picname
+        print '图片已保存至：' + picname
+        fig.savefig(picname, dpi=200)
+
         plt.show()
 
         return
