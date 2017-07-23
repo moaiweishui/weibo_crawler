@@ -7,12 +7,17 @@ from datetime import datetime
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
+import matplotlib
 import numpy as np
 
 from content_parsing_tool import *
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
+
+zhfont = matplotlib.font_manager.FontProperties(fname='/home/liuyx/anaconda2/lib/python2.7/site-packages/matplotlib/mpl-data/fonts/ttf/msyh.ttf')
+plt.rcParams['font.sans-serif'] = ['msyh']
+plt.rcParams['axes.unicode_minus'] = False
 
 class sina_weibo():
     def __init__(self, user_id):
@@ -190,5 +195,30 @@ class sina_weibo():
 
         return
 
+    # Display the weibo source
+    def display_source_distribution(self):
+        _source_series = self.weibo_df['from'].astype(str)
+        _source_list =_source_series.value_counts()
+        total_num = _source_list.sum()
+        labels = []
+        fracs = []
+        cnt = 0;
+        for x in _source_list.index:
+            if(total_num/_source_list[x] < 40):
+                labels.append(x)
+                fracs.append(_source_list[x])
+                cnt += _source_list[x]
+        labels.append('Others')
+        fracs.append(total_num - cnt)
+        print labels
+        print fracs
 
-        
+        #labels = _source_list.index
+        #fracs = _source_list.values
+
+        fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+        ax.set_title(u'微博来源分布', fontproperties=zhfont)
+        ax.pie(fracs, labels = labels)
+        plt.show()
+        return
+
