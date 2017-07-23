@@ -204,21 +204,19 @@ class sina_weibo():
         fracs = []
         cnt = 0;
         for x in _source_list.index:
+            # Less than 2.5%
             if(total_num/_source_list[x] < 40):
                 labels.append(x)
                 fracs.append(_source_list[x])
                 cnt += _source_list[x]
         labels.append('Others')
         fracs.append(total_num - cnt)
-        print labels
-        print fracs
-
-        #labels = _source_list.index
-        #fracs = _source_list.values
 
         fig, ax = plt.subplots(1, 1, figsize=(4, 4))
         ax.set_title(u'微博来源分布', fontproperties=zhfont)
         ax.pie(fracs, labels = labels)
+
         plt.show()
+
         return
 
