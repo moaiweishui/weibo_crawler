@@ -15,9 +15,6 @@ from content_parsing_tool import *
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-zhfont = matplotlib.font_manager.FontProperties(fname='/home/liuyx/anaconda2/lib/python2.7/site-packages/matplotlib/mpl-data/fonts/ttf/msyh.ttf')
-plt.rcParams['font.sans-serif'] = ['msyh']
-plt.rcParams['axes.unicode_minus'] = False
 
 class sina_weibo():
     def __init__(self, user_id):
@@ -212,8 +209,8 @@ class sina_weibo():
         labels.append('Others')
         fracs.append(total_num - cnt)
 
-        fig, ax = plt.subplots(1, 1, figsize=(4, 4))
-        ax.set_title(u'微博来源分布', fontproperties=zhfont)
+        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+        ax.set_title(u'微博来源分布')#, fontproperties=zhfont)
         ax.pie(fracs, labels = labels)
 
         plt.show()
