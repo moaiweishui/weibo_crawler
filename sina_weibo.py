@@ -2,6 +2,7 @@
 
 import sys
 import os
+import traceback
 from datetime import datetime
 
 import pandas as pd
@@ -25,6 +26,7 @@ class sina_weibo():
         self.weibo_df = pd.DataFrame(columns=['cnt',\
                 'time',\
                 'from',\
+                'repost_info',\
                 'content',\
                 'attitude',\
                 'repost',\
@@ -52,6 +54,7 @@ class sina_weibo():
             _list.append(weibo['cnt'])
             _list.append(weibo['time'])
             _list.append(weibo['from'])
+            _list.append(weibo['repost_info'])
             _list.append(weibo['content'])
             # Extract numeric value from attitude/repost/comment text.
             _list.append(numeric_value_extration(weibo['attitude']))
@@ -68,6 +71,8 @@ class sina_weibo():
         for weibo in self.weibo_content:
             print '\n' + '-'*40
             print weibo['cnt'], weibo['time']
+            if weibo['repost_info'] != 'None repost':
+                print weibo['repost_info']
             print weibo['content']
             # If include pic 
             if 'pic' in weibo.keys() and 'origin_pic_url' in weibo.keys():
@@ -106,6 +111,12 @@ class sina_weibo():
                     line_list2.append('***\n')
                     line_list2.append('> ' + str(weibo['cnt']) + bp*3)
                     line_list2.append(str(weibo['time']) +' ' + weibo['from'] + '\n\n')
+                    # if this is a repost weibo
+                    if weibo['repost_info'] != 'None repost' and weibo['repost_info'] is not None:
+                        _repost_info_list = weibo['repost_info'].split('|')
+                        if len(_repost_info_list) == 2:
+                            line_list2.append('> 转发了[' + _repost_info_list[1] +']('+ _repost_info_list[0] + ')的微博\n\n')
+
                     line_list2.append('> ' + weibo['content'] + '\n\n')
                     # If include pic
                     if 'pic' in weibo.keys() and 'origin_pic_url' in weibo.keys():
@@ -119,8 +130,10 @@ class sina_weibo():
                 print 'Write weibo content to markdown file succeed.\n'
                 print '成功生成Markdown文件，保存于： ' + filename
                 print '\n' + '-'*40 + '\n\n'
-        except:
+        except Exception, e:
             print 'Error occurs while writing file.'
+            traceback.print_exc()
+            print traceback.format_exc()
 
     def save2csv(self):
         #print self.weibo_df.loc[:, ['time', 'from', 'attitude', 'repost', 'comment']].head(10)

@@ -1,5 +1,7 @@
 # coding=utf-8
 import sys
+import traceback
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -54,7 +56,7 @@ def get_weibo_content(filename, current_time):
             content = f.read()
             
             # Match weibo entry. 
-            pattern = re.compile('<div class="c" id=".*?">.*?<div>.*?<span class="ctt">(.*?)</span>(.*?)<a href="https://weibo.cn/attitude.*?">(.*?)</a>(.*?[<a href="https://weibo.cn/repost.*?">.*?</a>|<span class="cmt">.*?</span>].*?)<a class="cc" href="https://weibo.cn/comment(.*?)">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>.*?<div class="s">.*?</div>', re.S)
+            pattern = re.compile('<div class="c" id=".*?">.*?<div>(.*?)<span class="ctt">(.*?)</span>(.*?)<a href="https://weibo.cn/attitude.*?">(.*?)</a>(.*?[<a href="https://weibo.cn/repost.*?">.*?</a>|<span class="cmt">.*?</span>].*?)<a class="cc" href="https://weibo.cn/comment(.*?)">(.*?)</a>.*?<span class="ct">(.*?)</span>.*?</div>.*?</div>.*?<div class="s">.*?</div>', re.S)
             entrys = re.findall(pattern, content)
             cnt = 1
             result = list()
@@ -63,14 +65,16 @@ def get_weibo_content(filename, current_time):
                 for entry in entrys:
                     weibo = dict()
                     weibo['cnt'] = cnt
+                    weibo['repost_info'] = entry[0].strip()
+                    weibo['repost_info'] =  weibo_parsing_repost_info(weibo['repost_info'].encode('utf-8'))
 
-                    weibo['content'] = entry[0].strip()
+                    weibo['content'] = entry[1].strip()
                     
                     # Parsing hyperlink.
                     weibo['content'] = weibo_parsing_hyperlink(weibo['content'].encode('utf-8'))
 
                     # If this weibo entry include picture.
-                    weibo['pic'] = entry[1].strip()
+                    weibo['pic'] = entry[2].strip()
                     if weibo['pic']:
                         pattern = re.compile('.*?<a href="https://weibo.cn/mblog/pic(.*?)">.*?<img.*?src="(.*?)"/>.*?</a>.*?', re.S)
                         pic_content = re.findall(pattern, weibo['pic'].encode('utf-8'))
@@ -80,26 +84,48 @@ def get_weibo_content(filename, current_time):
                     else:
                         del weibo['pic']
                         
-                    weibo['attitude'] = entry[2].strip()
+                    weibo['attitude'] = entry[3].strip()
                     
                     # Parsing repost.
-                    weibo['repost'] = entry[3].strip()
+                    weibo['repost'] = entry[4].strip()
                     weibo['repost'] = weibo_parsing_repost(weibo['repost'].encode('utf-8'))
                         
                     # Url where include origin comment information.
-                    weibo['comment_url'] = 'https://weibo.cn/comment' + entry[4].strip()
-                    weibo['comment'] = entry[5].strip()
-                    weibo['time'] = entry[6].strip()
+                    weibo['comment_url'] = 'https://weibo.cn/comment' + entry[5].strip()
+                    weibo['comment'] = entry[6].strip()
+                    weibo['time'] = entry[7].strip()
                     weibo['time'], weibo['from'] = weibo_parsing_time_from(weibo['time'], current_time)
                     result.append(weibo)
                     cnt = cnt + 1
             else:
                 print '未能获取到微博内容。'
-    except:
+    except Exception, e:
         print 'Error occurs while reading file.'
+        traceback.print_exc()
+        print traceback.format_exc()
     
     return result
-    
+
+
+
+# Parsing repost information    
+def weibo_parsing_repost_info(repost_info):
+    res = ''
+    if repost_info:
+        # Match repost information
+        pattern = re.compile('<span class="cmt">.*?<a href="(.*?)">(.*?)</a>.*?</span>', re.S)
+        find_res = re.findall(pattern, repost_info)
+        # If this weibo is repost from another one.
+        for x in find_res:
+            # repost source url
+            res += x[0].strip()
+            res += '|'
+            # repost source name
+            res += x[1].strip()
+    else:
+        res = 'None repost'
+    return res
+
 
 # Parsing hyperlink in weibo entry.
 def weibo_parsing_hyperlink(weibo_content):
