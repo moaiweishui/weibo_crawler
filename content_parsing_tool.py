@@ -65,6 +65,7 @@ def get_weibo_content(filename, current_time):
                 for entry in entrys:
                     weibo = dict()
                     weibo['cnt'] = cnt
+                    weibo['group'] = weibo_parsing_group(entry[0].strip())
                     weibo['repost_info'] = entry[0].strip()
                     weibo['repost_info'] =  weibo_parsing_repost_info(weibo['repost_info'].encode('utf-8'))
 
@@ -107,6 +108,16 @@ def get_weibo_content(filename, current_time):
     return result
 
 
+# Parsing group information
+def weibo_parsing_group(group_info):
+    res = 'All'
+    if group_info:
+        pattern = re.compile('<span class="cmt">.*?\[(.*?)\].*?</span>', re.S)
+        find_res = re.match(pattern, group_info)
+        if find_res:
+            res = find_res.group(1).strip()
+
+    return res
 
 # Parsing repost information    
 def weibo_parsing_repost_info(repost_info):

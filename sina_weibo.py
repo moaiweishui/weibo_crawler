@@ -26,6 +26,7 @@ class sina_weibo():
         self.weibo_df = pd.DataFrame(columns=['cnt',\
                 'time',\
                 'from',\
+                'group',\
                 'repost_info',\
                 'content',\
                 'attitude',\
@@ -54,6 +55,7 @@ class sina_weibo():
             _list.append(weibo['cnt'])
             _list.append(weibo['time'])
             _list.append(weibo['from'])
+            _list.append(weibo['group'])
             _list.append(weibo['repost_info'])
             _list.append(weibo['content'])
             # Extract numeric value from attitude/repost/comment text.
@@ -71,6 +73,7 @@ class sina_weibo():
         for weibo in self.weibo_content:
             print '\n' + '-'*40
             print weibo['cnt'], weibo['time']
+            print weibo['group']
             if weibo['repost_info'] != 'None repost':
                 print weibo['repost_info']
             print weibo['content']
@@ -110,12 +113,17 @@ class sina_weibo():
                     line_list2 = list()
                     line_list2.append('***\n')
                     line_list2.append('> ' + str(weibo['cnt']) + bp*3)
-                    line_list2.append(str(weibo['time']) +' ' + weibo['from'] + '\n\n')
+                    line_list2.append(str(weibo['time']) +' ' + weibo['from'])
+                    if weibo['group'] != 'All':
+                        line_list2.append(' [' + weibo['group'] + ']\n\n')
+                    else:
+                        line_list2.append('\n\n')
+                     
                     # if this is a repost weibo
                     if weibo['repost_info'] != 'None repost' and weibo['repost_info'] is not None:
                         _repost_info_list = weibo['repost_info'].split('|')
                         if len(_repost_info_list) == 2:
-                            line_list2.append('> 转发了[' + _repost_info_list[1] +']('+ _repost_info_list[0] + ')的微博\n\n')
+                            line_list2.append('> 转发了[' + _repost_info_list[1] +']('+ _repost_info_list[0] + ')的微博：\n\n')
 
                     line_list2.append('> ' + weibo['content'] + '\n\n')
                     # If include pic
