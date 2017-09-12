@@ -3,6 +3,7 @@
 
 ## Introduction
 - Python 2.X
+- MySQL 5.5
 
 ## Project framework
 - **main.py**：主函数
