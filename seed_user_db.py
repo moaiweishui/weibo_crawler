@@ -20,6 +20,7 @@ def create_seed_user_table(table_name, is_drop_old_table=False):
     result = cursor.fetchall()
     if result:
         print 'Warning: Table \'%s\' already exists' % table_name
+        db.close()
     else:
         sql = 'CREATE TABLE %s(\
                 id INT NOT NULL AUTO_INCREMENT,\
@@ -36,7 +37,8 @@ def create_seed_user_table(table_name, is_drop_old_table=False):
             print 'Error occurs while creating table \'%s\'' % table_name
             traceback.print_exc()
             print traceback.format_exc()
-    db.close()
+        finally:
+            db.close()
 
 # Insert seed user data
 def insert_user_to_seed_table(table_name, user_id):
@@ -47,6 +49,7 @@ def insert_user_to_seed_table(table_name, user_id):
     result = cursor.fetchall()
     if result:
         print 'User %s already exists in table %s' % (user_id, table_name)
+        db.close()
     else:
         sql = "INSERT INTO %s(user_id) VALUES (\'%s\')" % (table_name, user_id)
         try:
@@ -57,7 +60,8 @@ def insert_user_to_seed_table(table_name, user_id):
             print 'Error occurs while inserting data'
             traceback.print_exc()
             print traceback.format_exc()
-    db.close()
+        finally:
+            db.close()
 
 # Update user in seed_user table
 def update_user_in_seed_table(table_name, user_id, update_time):
@@ -68,6 +72,7 @@ def update_user_in_seed_table(table_name, user_id, update_time):
     result = cursor.fetchall()
     if not result:
         print 'User %s does not exists in table %s' % (user_id, table_name)
+        db.close()
     else:
         sql = "UPDATE %s SET update_time = \'%s\' WHERE user_id = \'%s\'" % (table_name, update_time, user_id)
         try:
@@ -78,7 +83,8 @@ def update_user_in_seed_table(table_name, user_id, update_time):
             print 'Error occurs while updating data'
             traceback.print_exc()
             print traceback.format_exc()
-    db.close()
+        finally:
+            db.close()
 
 # Get seed user id
 # only_new:  true: have not been crawled
@@ -92,6 +98,7 @@ def get_seed_user(table_name, only_new=True):
     result = cursor.fetchall()
     if not result:
         print 'Table %s not exists' % table_name
+        db.close()
     else:
         if only_new:
             sql = 'SELECT user_id FROM %s WHERE update_time IS NULL' % table_name
@@ -106,7 +113,8 @@ def get_seed_user(table_name, only_new=True):
             print 'Error occurs while updating data'
             traceback.print_exc()
             print traceback.format_exc()
-    db.close()
+        finally:
+            db.close()
     return seed_user_list
 
 
