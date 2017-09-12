@@ -9,7 +9,7 @@ import re
 from datetime import datetime
 
 
-def get_basic_info(homepage_content):
+def get_basic_info(homepage_content, user_id):
     basic_info = dict()
     content = homepage_content.encode('utf-8')
 
@@ -18,6 +18,7 @@ def get_basic_info(homepage_content):
     result = re.search(pattern, content)
     if result:
         # \xc2\xa0: Non-breaking space
+        basic_info['user_id'] = user_id
         basic_info['username'] = result.group(1).strip().split('\xc2\xa0')[0]
         basic_info['sex'] = result.group(1).strip().split('\xc2\xa0')[1].split('/')[0]
         basic_info['region'] = result.group(1).strip().split('\xc2\xa0')[1].split('/')[1]

@@ -34,7 +34,7 @@ class sina_weibo():
                 'comment'])
 
     def get_basic_info(self, home_page):
-        self.basic_info = get_basic_info(home_page)
+        self.basic_info = get_basic_info(home_page, self.user_id)
 
     def display_basic_info(self):
         print '\n' + '-'*40 + '\n'
