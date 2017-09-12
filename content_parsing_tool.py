@@ -17,11 +17,19 @@ def get_basic_info(homepage_content, user_id):
     pattern = re.compile('<span class="ctt">(.*?)<span class="cmt">(.*?)</span>.*?<span class="ctt".*?>(.*?)</span>', re.S)
     result = re.search(pattern, content)
     if result:
-        # \xc2\xa0: Non-breaking space
+        pattern = re.compile('(.*?)<a href=.*?/a>(.*)', re.S)
+        res = re.search(pattern, result.group(1).strip())
+        if res:
+            # vip logo
+            basic_info['username'] = res.group(1).strip()
+            basic_info['sex'] = res.group(2).strip().split('/')[0]
+            basic_info['region'] = res.group(2).strip().split('/')[1]
+        else:
+            # \xc2\xa0: Non-breaking space
+            basic_info['username'] = result.group(1).strip().split('\xc2\xa0')[0]
+            basic_info['sex'] = result.group(1).strip().split('\xc2\xa0')[1].split('/')[0]
+            basic_info['region'] = result.group(1).strip().split('\xc2\xa0')[1].split('/')[1]
         basic_info['user_id'] = user_id
-        basic_info['username'] = result.group(1).strip().split('\xc2\xa0')[0]
-        basic_info['sex'] = result.group(1).strip().split('\xc2\xa0')[1].split('/')[0]
-        basic_info['region'] = result.group(1).strip().split('\xc2\xa0')[1].split('/')[1]
         basic_info['relationship'] = result.group(2).strip()
         basic_info['signature'] = result.group(3).strip()
     else:

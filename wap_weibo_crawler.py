@@ -86,7 +86,7 @@ class WapWeiboCrawler():
                             page = self.get_page(url)
                             
                         print "Get page succeed:",
-                        print url, 
+                        print url 
                         soup = BeautifulSoup(page, 'lxml')
                         f.write(soup.prettify())
                         if i:
@@ -108,8 +108,8 @@ if __name__ == '__main__':
     weibo_crawler = WapWeiboCrawler(username, password)
     weibo_crawler.log_in()
     
-    user_id = '1523456657'
-    baseURL = 'https://weibo.cn/u/' + user_id + '?page=' + str(79)
+    user_id = '1654301217'
+    baseURL = 'https://weibo.cn/u/' + user_id + '?page=' + str(1)
     page = BeautifulSoup(weibo_crawler.get_page(baseURL), 'lxml').prettify()
     f = open('single_page.txt', 'w')
     f.write(page)

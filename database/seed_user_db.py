@@ -106,8 +106,11 @@ def get_seed_user(table_name, only_new=True):
             sql = 'SELECT user_id FROM %s' % table_name
         try:
             cursor.execute(sql)
-            seed_user_list = cursor.fetchall()
+            rows = cursor.fetchall()
+            for row in rows:
+                seed_user_list.append(row[0])
             db.commit()
+
         except Exception, e:
             db.rollback()
             print 'Error occurs while updating data'
@@ -119,9 +122,9 @@ def get_seed_user(table_name, only_new=True):
 
 
 if __name__ == '__main__':
-    create_seed_user_table('seed_user')
-    insert_user_to_seed_table('seed_user', '')
-    insert_user_to_seed_table('seed_user', '')
+    #create_seed_user_table('seed_user')
+    #insert_user_to_seed_table('seed_user', '')
+    #insert_user_to_seed_table('seed_user', '')
     #update_user_in_seed_table('seed_user', '12345', '2017-9-13')
     seed_user_list = get_seed_user('seed_user')
     for x in seed_user_list:
